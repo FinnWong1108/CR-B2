@@ -5,26 +5,55 @@ date: "2024-05-14"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r, warning= FALSE, message=FALSE}
+library(dplyr)
+library(tidyr)
+
+install.packages("openxlsx")
+library(openxlsx)
 ```
 
-## R Markdown
+#Import data
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+```{r}
+survey_data <- read.xlsx("/Users/wchonfai/Desktop/CR_B2/CR24 Spring class survey raw data.xlsx") #load 
+colnames(survey_data) <- make.names(colnames(survey_data), unique = TRUE)
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+#change age to numeric
+survey_data$`What.is.your.age.` <- as.numeric(survey_data$`What.is.your.age.`)
 
-```{r cars}
-summary(cars)
+#remove the data with 55000 make per hour
+survey_data <- survey_data %>%
+  filter(`How.much.money.do.you.make.per.hour.of.work.at.your.job.` != 55000)
+
+#no missing data, removed the 55000 Outliers
+summary(survey_data)
 ```
 
-## Including Plots
+```{r}
+#calculate gender, 1= Male, 2=Female
+gender_distribution <- survey_data %>%
+  group_by(What.gender.do.you.identify.with.) %>%
+  summarise(Count = n())
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+print(gender_distribution)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+```{r}
+## split the data into groups
+colnames(survey_data)[ncol(survey_data)] <- "order"
+
+MoneyasTimeLongTerm <- survey_data %>%
+  filter(order %in% c("MoneyasTimeLongTerm"))
+
+MoneyasTimeWorkedImmediate <- survey_data %>%
+  filter(order %in% c("MoneyasTimeWorkedImmediate"))
+
+MoneyImmediate <- survey_data %>%
+  filter(order %in% c("MoneyImmediate"))
+
+Moneylongterm <- survey_data %>%
+  filter(order %in% c("Moneylongterm"))
+
+```
