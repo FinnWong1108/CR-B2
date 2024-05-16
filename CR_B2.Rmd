@@ -45,16 +45,28 @@ print(gender_distribution)
 ## split the data into groups
 colnames(survey_data)[ncol(survey_data)] <- "order"
 
+#remove all the NA columns from each group
+remove_na_columns <- function(df) {
+  df %>%
+    select_if(~!all(is.na(.)))
+}
+
+
 MoneyasTimeLongTerm <- survey_data %>%
-  filter(order %in% c("MoneyasTimeLongTerm"))
+  filter(order %in% c("MoneyasTimeLongTerm")) %>% 
+  remove_na_columns()
 
 MoneyasTimeWorkedImmediate <- survey_data %>%
-  filter(order %in% c("MoneyasTimeWorkedImmediate"))
+  filter(order %in% c("MoneyasTimeWorkedImmediate"))%>% 
+  remove_na_columns()
 
 MoneyImmediate <- survey_data %>%
-  filter(order %in% c("MoneyImmediate"))
+  filter(order %in% c("MoneyImmediate"))%>% 
+  remove_na_columns()
 
 Moneylongterm <- survey_data %>%
-  filter(order %in% c("Moneylongterm"))
+  filter(order %in% c("Moneylongterm"))%>% 
+  remove_na_columns()
 
 ```
+
