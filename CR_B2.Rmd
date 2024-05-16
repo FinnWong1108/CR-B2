@@ -1,7 +1,7 @@
 ---
 title: "CR_B2"
-author: "Finn"
-date: "2024-05-14"
+author: "Finn & Victoria"
+date: "2024-05-16"
 output: html_document
 ---
 
@@ -16,8 +16,9 @@ library(openxlsx)
 #Import data
 
 ```{r}
-survey_data <- read.xlsx("/Users/wchonfai/Desktop/CR_B2/CR24 Spring class survey raw data.xlsx") #load 
+survey_data <- read.xlsx("data/CR24 Spring class survey raw data.xlsx") #load from data file
 colnames(survey_data) <- make.names(colnames(survey_data), unique = TRUE)
+survey_data <- survey_data[, -(1:7)] #remove unnecessary columns from 1:7
 
 #change age to numeric
 survey_data$`What.is.your.age.` <- as.numeric(survey_data$`What.is.your.age.`)
@@ -44,16 +45,28 @@ print(gender_distribution)
 ## split the data into groups
 colnames(survey_data)[ncol(survey_data)] <- "order"
 
+#remove all the NA columns from each group
+remove_na_columns <- function(df) {
+  df %>%
+    select_if(~!all(is.na(.)))
+}
+
+
 MoneyasTimeLongTerm <- survey_data %>%
-  filter(order %in% c("MoneyasTimeLongTerm"))
+  filter(order %in% c("MoneyasTimeLongTerm")) %>% 
+  remove_na_columns()
 
 MoneyasTimeWorkedImmediate <- survey_data %>%
-  filter(order %in% c("MoneyasTimeWorkedImmediate"))
+  filter(order %in% c("MoneyasTimeWorkedImmediate"))%>% 
+  remove_na_columns()
 
 MoneyImmediate <- survey_data %>%
-  filter(order %in% c("MoneyImmediate"))
+  filter(order %in% c("MoneyImmediate"))%>% 
+  remove_na_columns()
 
 Moneylongterm <- survey_data %>%
-  filter(order %in% c("Moneylongterm"))
+  filter(order %in% c("Moneylongterm"))%>% 
+  remove_na_columns()
 
 ```
+
